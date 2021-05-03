@@ -9,12 +9,13 @@
 
 <body>
     <h1 id="qunit-header">Cookie simple demo</h1>
-    <script type="text/javascript" src="cookie_alert.js"></script>
+    <script type="text/javascript" src="src/cookies.min.js"></script>
 
     <script>
          var options = {
             message: "We use cookies to enhance your experience.",
             moreinfoLink: "/about/cookies",
+            hideOnScroll: true
         };
 
         Cookies.init('acceptCookies', opts = options )

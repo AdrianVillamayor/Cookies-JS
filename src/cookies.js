@@ -26,6 +26,7 @@ var Utils = {
         }
         return obj;
     },
+
     objToString: function (obj, delimiter = ";") {
         var str = '';
         for (var p in obj) {
@@ -35,10 +36,12 @@ var Utils = {
         }
         return str;
     },
+
     str2bool: function (str) {
         str = String(str);
         switch (str.toLowerCase()) {
             case 'false':
+            case false:
             case 'no':
             case '0':
             case 'n':
@@ -48,6 +51,7 @@ var Utils = {
                 return true;
         }
     },
+
     extend: function () {
         var i = 0;
         var result = {};
@@ -59,14 +63,15 @@ var Utils = {
         }
         return result;
     },
+
     decode: function (s) {
         return s.replace(/(%[0-9A-Z]{2})+/g, decodeURIComponent);
-    },
-
+    }
 }
 
 var Cookies = {
     api: function () {},
+
     set: function (key, value, attributes) {
         if (typeof document === 'undefined') {
             return;
@@ -153,31 +158,33 @@ var Cookies = {
 
         return key ? jar[key] : jar;
     },
+
     has: function (key) {
         return (new RegExp('(?:^|;\\s*)' + encodeURIComponent(key).replace(/[-.+*]/g, '\\$&') + '\\s*\\=')).test(document.cookie);
     },
+
     remove: function (key, path, domain) {
         if (!key || !this.has(key)) {
             return false;
         }
-
         document.cookie = encodeURIComponent(key) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT;path=' + (path ? path : '/');
         return true;
     },
+
     createBanner: function (cookie, opts) {
         const _self = this;
-        var default_text = `We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.`;
 
         var options = {
             hideOnScroll: false,
-            expiryDays: 365,
-            type: 'cookie',
             scrollDelay: 3000,
+            expiryDays: 365,
+            type: 'cookie', // localStorage
             bannerClass: "alert",
             bannerTarget: "cookiealert",
             bannerStyle: {
                 'left': 0,
                 'right': 0,
+                'width': 'auto',
                 'text-align': 'center',
                 'bottom': 0,
                 'margin': 0,
@@ -208,7 +215,7 @@ var Cookies = {
                 'margin-top': '10px',
                 'transition': 'color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out'
             },
-            message: default_text,
+            message: 'We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.',
             acceptBtn: true,
             accept: 'Accept',
             acceptStyle: {
@@ -253,19 +260,19 @@ var Cookies = {
         cookie_alert += options.message;
         cookie_alert += (options.moreinfoBtn) ? `<a href="${options.moreinfoLink}" type="button" class="btn btn-yellow btn-sm" target="${options.moreinfoTarget}" rel="${options.moreinfoRel}"> ${options.moreinfo} </a>` : '';
 
-        if (options.acceptBtn || options.rejectBtn || options.configBtn) {
+        if (Utils.str2bool(options.acceptBtn) || Utils.str2bool(options.rejectBtn) || Utils.str2bool(options.configBtn)) {
             cookie_alert += '<div>';
-            if (options.acceptBtn) {
+            if (Utils.str2bool(options.acceptBtn)) {
                 acceptStyle = Utils.objToString(options.acceptStyle);
                 cookie_alert += `<button type="button" style="${btnStyle} ${acceptStyle}" class="btn btn-yellow btn-sm acceptcookies"> ${options.accept} </button>`;
 
             }
-            if (options.rejectBtn) {
+            if (Utils.str2bool(options.rejectBtn)) {
                 rejectStyle = Utils.objToString(options.rejectStyle);
                 cookie_alert += `<button type="button" style="${btnStyle} ${rejectStyle}" class="btn btn-yellow btn-sm rejectcookies"> ${options.reject} </button>`;
 
             }
-            if (options.configBtn) {
+            if (Utils.str2bool(options.configBtn)) {
                 configStyle = Utils.objToString(options.configStyle);
                 cookie_alert += `<a href="${options.configLink}" type="button" style="${btnStyle} ${configStyle}" class="btn btn-yellow btn-sm" target="${options.configTarget}" rel="${options.configRel}"> ${options.config} </a>`;
 
@@ -287,7 +294,7 @@ var Cookies = {
             'expires': options.expiryDays
         }
 
-        if (options.acceptBtn) {
+        if (Utils.str2bool(options.acceptBtn)) {
             let acceptCookies = document.querySelector(".acceptcookies");
 
             acceptCookies.addEventListener("click", function () {
@@ -295,7 +302,7 @@ var Cookies = {
             });
         }
 
-        if (options.rejectBtn) {
+        if (Utils.str2bool(options.rejectBtn)) {
             let rejectCookies = document.querySelector(".rejectcookies");
 
             rejectCookies.addEventListener("click", function () {
@@ -303,7 +310,7 @@ var Cookies = {
             });
         }
 
-        if (options.hideOnScroll == "true") {
+        if (Utils.str2bool(options.hideOnScroll)) {
             document.getElementsByTagName('body')[0].onscroll = () => {
                 setTimeout(function () {
                     _self.agree(opts_actions, cookieAlert)
@@ -322,10 +329,10 @@ var Cookies = {
                 this.set(opts.cookie, true, {
                     expires: opts.expires
                 });
-                cookieAlert.style.display = "none";
                 break;
         }
 
+        cookieAlert.style.display = "none";
         window.dispatchEvent(new Event("cookieAlertAccept"))
     },
 
@@ -338,17 +345,21 @@ var Cookies = {
                 break;
 
             default:
-                this.remove(cookie);
-                
-                cookieAlert.style.display = "none";
+                this.remove(opts.cookie);
                 break;
         }
 
+        cookieAlert.style.display = "none";
         window.dispatchEvent(new Event("cookieAlertReject"))
     },
 
+    clear: function (cookie) {
+        localStorage.removeItem(cookie);
+        this.remove(cookie);
+    },
+
     init: function (cookie, opts) {
-        if (this.has(cookie) === false) {
+        if (this.has(cookie) === false && localStorage.getItem(cookie) === null) {
             this.createBanner(cookie, opts)
         }
     }

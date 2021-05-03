@@ -1,12 +1,9 @@
 # cookie_alert.js
 ## How to use
-#### 1. In the `head` of your document, include `cookiealert.css` **after Bootstrap**.
-```html
-<link rel="stylesheet" href="cookie_alert.css">
-```
-#### 2. Include the JavaScript after the html markup
-```html
-<script src="cookie_alert.js"></script>
+#### Include the JavaScript after the html markup
+#### Include the JavaScript after the html markup
+
+<script src="cookies.js"></script>
 ```
 
 ### Accept event
@@ -17,3 +14,4 @@ window.addEventListener("cookieAlertAccept", function() {
     alert("cookies accepted")
 })
 ```
+https://cdn.jsdelivr.net/gh/AdrianVillamayor/Cookies-JS/cookie_alert.js
