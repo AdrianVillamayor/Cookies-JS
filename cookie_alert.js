@@ -1,24 +1,54 @@
-(function (factory) {
-    // https://github.com/js-cookie/js-cookie
-    var registeredInModuleLoader;
-    if (typeof define === 'function' && define.amd) {
-        define(factory);
-        registeredInModuleLoader = true;
-    }
-    if (typeof exports === 'object') {
-        module.exports = factory();
-        registeredInModuleLoader = true;
-    }
-    if (!registeredInModuleLoader) {
-        var OldCookies = window.Cookies;
-        var api = window.Cookies = factory();
-        api.noConflict = function () {
-            window.Cookies = OldCookies;
-            return api;
-        };
-    }
-}(function () {
-    function extend() {
+var Utils = {
+    merge: function () {
+        var obj = {},
+            al = arguments.length,
+            key;
+        if (0 === al) {
+            return obj;
+        }
+        for (let i = 0; i < al; i++) {
+            for (key in arguments[i]) {
+
+                if (Object.prototype.hasOwnProperty.call(arguments[i], key)) {
+                    if (typeof arguments[i][key] === 'object') {
+                        for (x in arguments[i][key]) {
+                            if (obj[key] !== undefined) {
+                                obj[key][x] = arguments[i][key][x]
+                            } else {
+                                obj[key] = arguments[i][key]
+                            }
+                        }
+                    } else {
+                        obj[key] = arguments[i][key];
+                    }
+                }
+            }
+        }
+        return obj;
+    },
+    objToString: function (obj, delimiter = ";") {
+        var str = '';
+        for (var p in obj) {
+            if (obj.hasOwnProperty(p)) {
+                str += p + ':' + obj[p] + delimiter;
+            }
+        }
+        return str;
+    },
+    str2bool: function (str) {
+        str = String(str);
+        switch (str.toLowerCase()) {
+            case 'false':
+            case 'no':
+            case '0':
+            case 'n':
+            case '':
+                return false;
+            default:
+                return true;
+        }
+    },
+    extend: function () {
         var i = 0;
         var result = {};
         for (; i < arguments.length; i++) {
@@ -28,176 +58,298 @@
             }
         }
         return result;
-    }
-
-    function decode(s) {
+    },
+    decode: function (s) {
         return s.replace(/(%[0-9A-Z]{2})+/g, decodeURIComponent);
-    }
+    },
 
-    function init(converter) {
-        function api() {}
+}
 
-        function set(key, value, attributes) {
-            if (typeof document === 'undefined') {
-                return;
+var Cookies = {
+    api: function () {},
+    set: function (key, value, attributes) {
+        if (typeof document === 'undefined') {
+            return;
+        }
+
+        attributes = Utils.extend({
+            path: '/'
+        }, this.api.defaults, attributes);
+
+        if (typeof attributes.expires === 'number') {
+            attributes.expires = new Date(new Date() * 1 + attributes.expires * 864e+5);
+        }
+
+        // We're using "expires" because "max-age" is not supported by IE
+        attributes.expires = attributes.expires ? attributes.expires.toUTCString() : '';
+
+        try {
+            var result = JSON.stringify(value);
+            if (/^[\{\[]/.test(result)) {
+                value = result;
+            }
+        } catch (e) {}
+
+        value = window.Cookies.write ?
+            window.Cookies.write(value, key) :
+            encodeURIComponent(String(value))
+            .replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
+
+        key = encodeURIComponent(String(key))
+            .replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent)
+            .replace(/[\(\)]/g, escape);
+
+        var stringifiedAttributes = '';
+        for (var attributeName in attributes) {
+            if (!attributes[attributeName]) {
+                continue;
+            }
+            stringifiedAttributes += '; ' + attributeName;
+            if (attributes[attributeName] === true) {
+                continue;
             }
 
-            attributes = extend({
-                path: '/'
-            }, api.defaults, attributes);
+            stringifiedAttributes += '=' + attributes[attributeName].split(';')[0];
+        }
 
-            if (typeof attributes.expires === 'number') {
-                attributes.expires = new Date(new Date() * 1 + attributes.expires * 864e+5);
+        return (document.cookie = key + '=' + value + stringifiedAttributes);
+    },
+
+    get: function (key, json) {
+        if (typeof document === 'undefined') {
+            return;
+        }
+
+        var jar = {};
+        // To prevent the for loop in the first place assign an empty array
+        // in case there are no cookies at all.
+        var cookies = document.cookie ? document.cookie.split('; ') : [];
+
+        for (let i = 0; i < cookies.length; i++) {
+            var parts = cookies[i].split('=');
+            var cookie = parts.slice(1).join('=');
+
+            if (!json && cookie.charAt(0) === '"') {
+                cookie = cookie.slice(1, -1);
             }
-
-            // We're using "expires" because "max-age" is not supported by IE
-            attributes.expires = attributes.expires ? attributes.expires.toUTCString() : '';
 
             try {
-                var result = JSON.stringify(value);
-                if (/^[\{\[]/.test(result)) {
-                    value = result;
+                var name = Utils.decode(parts[0]);
+                cookie = Utils.decode(cookie);
+
+                if (json) {
+                    try {
+                        cookie = JSON.parse(cookie);
+                    } catch (e) {}
+                }
+
+                jar[name] = cookie;
+
+                if (key === name) {
+                    break;
                 }
             } catch (e) {}
-
-            value = converter.write ?
-                converter.write(value, key) :
-                encodeURIComponent(String(value))
-                .replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
-
-            key = encodeURIComponent(String(key))
-                .replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent)
-                .replace(/[\(\)]/g, escape);
-
-            var stringifiedAttributes = '';
-            for (var attributeName in attributes) {
-                if (!attributes[attributeName]) {
-                    continue;
-                }
-                stringifiedAttributes += '; ' + attributeName;
-                if (attributes[attributeName] === true) {
-                    continue;
-                }
-
-                // Considers RFC 6265 section 5.2:
-                // ...
-                // 3.  If the remaining unparsed-attributes contains a %x3B (";")
-                //     character:
-                // Consume the characters of the unparsed-attributes up to,
-                // not including, the first %x3B (";") character.
-                // ...
-                stringifiedAttributes += '=' + attributes[attributeName].split(';')[0];
-            }
-
-            return (document.cookie = key + '=' + value + stringifiedAttributes);
         }
 
-        function get(key, json) {
-            if (typeof document === 'undefined') {
-                return;
-            }
-
-            var jar = {};
-            // To prevent the for loop in the first place assign an empty array
-            // in case there are no cookies at all.
-            var cookies = document.cookie ? document.cookie.split('; ') : [];
-            var i = 0;
-
-            for (; i < cookies.length; i++) {
-                var parts = cookies[i].split('=');
-                var cookie = parts.slice(1).join('=');
-
-                if (!json && cookie.charAt(0) === '"') {
-                    cookie = cookie.slice(1, -1);
-                }
-
-                try {
-                    var name = decode(parts[0]);
-                    cookie = (converter.read || converter)(cookie, name) ||
-                        decode(cookie);
-
-                    if (json) {
-                        try {
-                            cookie = JSON.parse(cookie);
-                        } catch (e) {}
-                    }
-
-                    jar[name] = cookie;
-
-                    if (key === name) {
-                        break;
-                    }
-                } catch (e) {}
-            }
-
-            return key ? jar[key] : jar;
+        return key ? jar[key] : jar;
+    },
+    has: function (key) {
+        return (new RegExp('(?:^|;\\s*)' + encodeURIComponent(key).replace(/[-.+*]/g, '\\$&') + '\\s*\\=')).test(document.cookie);
+    },
+    remove: function (key, path, domain) {
+        if (!key || !this.has(key)) {
+            return false;
         }
 
-        api.set = set;
-        api.get = function (key) {
-            return get(key, false /* read as raw */ );
+        document.cookie = encodeURIComponent(key) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT;path=' + (path ? path : '/');
+        return true;
+    },
+    createBanner: function (cookie, opts) {
+        const _self = this;
+        var default_text = `We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.`;
+
+        var options = {
+            hideOnScroll: false,
+            expiryDays: 365,
+            type: 'cookie',
+            scrollDelay: 3000,
+            bannerClass: "alert",
+            bannerTarget: "cookiealert",
+            bannerStyle: {
+                'left': 0,
+                'right': 0,
+                'text-align': 'center',
+                'bottom': 0,
+                'margin': 0,
+                'opacity': 1,
+                'padding': '1.5em',
+                'align-items': 'center',
+                'line-height': '1.5em',
+                'transition': 'opacity 1s ease',
+                '-webkit-transition': 'opacity 1s ease',
+                '-moz-transition': 'opacity 1s ease',
+                '-ms-transition': 'opacity 1s ease',
+                '-o-transition': 'opacity 1s ease',
+                'overflow': 'hidden',
+                'position': 'fixed',
+                'z-index': '9999',
+                'background-color': "#FFF",
+                'border': '3px solid tomato',
+                'border-radius': 0
+            },
+            btnStyle: {
+                'text-align': 'center',
+                'border': '1px solid transparent',
+                'padding': '.375rem .75rem',
+                'line-height': '1.5',
+                'cursor': 'pointer',
+                'border-radius': '.25rem',
+                'color': '#FFF',
+                'margin-top': '10px',
+                'transition': 'color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out'
+            },
+            message: default_text,
+            acceptBtn: true,
+            accept: 'Accept',
+            acceptStyle: {
+                'color': '#FFF',
+                'background-color': '#007bff',
+                'margin-right': '10px'
+            },
+            rejectBtn: true,
+            reject: 'Reject',
+            rejectColor: "#dc3545",
+            rejectStyle: {
+                'color': '#FFF',
+                'background-color': '#dc3545',
+                'margin-right': '10px'
+            },
+            configBtn: true,
+            config: 'Config',
+            configStyle: {
+                'color': '#FFF',
+                'background-color': '#ffc107',
+                'text-decoration': 'none'
+            },
+            configLink: '#',
+            configTarget: '_blank',
+            configRel: 'noopener noreferrer',
+            moreinfoBtn: true,
+            moreinfo: 'Learn more',
+            moreinfoLink: 'http://aboutcookies.org',
+            moreinfoTarget: '_blank',
+            moreinfoRel: 'noopener noreferrer'
         };
-        api.getJSON = function (key) {
-            return get(key, true /* read as json */ );
-        };
-        api.remove = function (key, attributes) {
-            set(key, '', extend(attributes, {
-                expires: -1
-            }));
-        };
 
-        api.defaults = {};
+        if (opts) {
+            options = Utils.merge(options, opts);
+        }
 
-        api.withConverter = init;
+        bannerStyle = Utils.objToString(options.bannerStyle);
+        btnStyle = Utils.objToString(options.btnStyle);
 
-        return api;
-    }
+        cookie_alert = `<div class="${options.bannerClass} ${options.bannerTarget}" style="${bannerStyle}" role="alert">`;
 
-    return init(function () {});
-}));
+        cookie_alert += options.message;
+        cookie_alert += (options.moreinfoBtn) ? `<a href="${options.moreinfoLink}" type="button" class="btn btn-yellow btn-sm" target="${options.moreinfoTarget}" rel="${options.moreinfoRel}"> ${options.moreinfo} </a>` : '';
 
+        if (options.acceptBtn || options.rejectBtn || options.configBtn) {
+            cookie_alert += '<div>';
+            if (options.acceptBtn) {
+                acceptStyle = Utils.objToString(options.acceptStyle);
+                cookie_alert += `<button type="button" style="${btnStyle} ${acceptStyle}" class="btn btn-yellow btn-sm acceptcookies"> ${options.accept} </button>`;
 
-(function () {
-    "use strict";
+            }
+            if (options.rejectBtn) {
+                rejectStyle = Utils.objToString(options.rejectStyle);
+                cookie_alert += `<button type="button" style="${btnStyle} ${rejectStyle}" class="btn btn-yellow btn-sm rejectcookies"> ${options.reject} </button>`;
 
-    if (Cookies.get("terms") == undefined || Cookies.get('terms') != "true") {
-        return;
-    }
-    
-    createBanner();
-    
-    var cookieAlert = document.querySelector(".cookiealert");
-    var acceptCookies = document.querySelector(".acceptcookies");
+            }
+            if (options.configBtn) {
+                configStyle = Utils.objToString(options.configStyle);
+                cookie_alert += `<a href="${options.configLink}" type="button" style="${btnStyle} ${configStyle}" class="btn btn-yellow btn-sm" target="${options.configTarget}" rel="${options.configRel}"> ${options.config} </a>`;
 
-    cookieAlert.offsetHeight;
-    // Show the alert if we cant find the "acceptCookies" cookie
-    if (Cookies.get("acceptCookies") == undefined || Cookies.get('acceptCookies') != "true") {
-        cookieAlert.classList.add("show");
-    }
+            }
+            cookie_alert += '</div>';
+        }
 
-    // When clicking on the agree button, create a 1 year
-    // cookie to remember user's choice and close the banner
-    acceptCookies.addEventListener("click", function () {
-        Cookies.set("acceptCookies", true, {
-            expires: 365
-        });
+        cookie_alert += `</div>`;
 
-        cookieAlert.classList.remove("show");
+        document.body.innerHTML += cookie_alert;
 
-        // dispatch the accept event
+        let cookieAlert = document.querySelector(`.${options.bannerTarget}`);
+
+        cookieAlert.offsetHeight;
+
+        opts_actions = {
+            'cookie': cookie,
+            'type': options.type,
+            'expires': options.expiryDays
+        }
+
+        if (options.acceptBtn) {
+            let acceptCookies = document.querySelector(".acceptcookies");
+
+            acceptCookies.addEventListener("click", function () {
+                _self.agree(opts_actions, cookieAlert)
+            });
+        }
+
+        if (options.rejectBtn) {
+            let rejectCookies = document.querySelector(".rejectcookies");
+
+            rejectCookies.addEventListener("click", function () {
+                _self.reject(opts_actions, cookieAlert)
+            });
+        }
+
+        if (options.hideOnScroll == "true") {
+            document.getElementsByTagName('body')[0].onscroll = () => {
+                setTimeout(function () {
+                    _self.agree(opts_actions, cookieAlert)
+                }, options.scrollDelay);
+            };
+        }
+    },
+
+    agree: function (opts, cookieAlert) {
+        switch (opts.type) {
+            case 'localStorage':
+                localStorage.setItem(opts.cookie, true)
+                break;
+
+            default:
+                this.set(opts.cookie, true, {
+                    expires: opts.expires
+                });
+                cookieAlert.style.display = "none";
+                break;
+        }
+
         window.dispatchEvent(new Event("cookieAlertAccept"))
-    });
-})();
+    },
 
+    reject: function (opts, cookieAlert) {
+        window.dispatchEvent(new Event("cookieAlertReject"))
 
-function createBanner(msg = '<b>Do you like cookies?</b>', btn_accept = "Accept", btn_config = "Configuration", url_config = "") {
-    cookie = `
-    <div class="alert text-center cookiealert" role="alert">
-		${msg}
-		
-        <button type="button" class="btn btn-yellow btn-sm acceptcookies"> ${btn_accept} </button>
-        <a href="${url_config}" type="button" class="btn btn-yellow btn-sm"> ${btn_config} </a>
-    </div>`;
+        switch (opts.type) {
+            case 'localStorage':
+                localStorage.setItem(opts.cookie, false)
+                break;
 
-    document.body.innerHTML += cookie;
-}
+            default:
+                this.remove(cookie);
+                
+                cookieAlert.style.display = "none";
+                break;
+        }
+
+        window.dispatchEvent(new Event("cookieAlertReject"))
+    },
+
+    init: function (cookie, opts) {
+        if (this.has(cookie) === false) {
+            this.createBanner(cookie, opts)
+        }
+    }
+};
