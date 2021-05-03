@@ -58,7 +58,7 @@ Cookies.init('acceptCookies', options)
 ## Config Cookies
 Actions to manage cookies
 |Action  | Params |  Value / Definition | 
-| ------------- | ------------- | ------------- | ------------- |
+| ------------- | ------------- | ------------- |
 | `set` | String `key`, String `value`, Object `attributes` | `attributes = {path: '', domain: 'example.com', expires: 20}` [Write a New Cookie](https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#write_a_new_cookie)
 | `get` | String `key`  | If `key` is not empty, it collects the value of that cookie. Otherwise it returns all cookies |
 | `has` | String `key`  | Check if the cookie exists (`true` or `false`) |
