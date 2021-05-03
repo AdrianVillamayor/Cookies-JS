@@ -62,7 +62,7 @@ Actions to manage cookies
 | `set` | String `key`, String `value`, Object `attributes` | `attributes = {path: '', domain: 'example.com', expires: 20}` [Write a New Cookie](https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#write_a_new_cookie)
 | `get` | String `key`  | If `key` is not empty, it collects the value of that cookie. Otherwise it returns all cookies |
 | `has` | String `key`  | Check if the cookie exists (`true` or `false`) |
-| `remove` | String `key` | Delete the cookie you have set |
+| `remove` | String `key`,  Object `attributes` | Delete the cookie you have set.  `attributes = {path: '', domain: 'example.com', expires: 20}` [Write a New Cookie]|
 | `clear` |String `cookie`| If `cookie` is empty it deletes all cookies and matching localStorage . Otherwise only the one sent.  |
 | `init` | String `cookie`, Object `opts`  | Name for the banner cookie and the configuration and customisation options |
 
