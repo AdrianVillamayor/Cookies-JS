@@ -160,15 +160,15 @@
 (function () {
     "use strict";
 
+    if (Cookies.get("terms") == undefined || Cookies.get('terms') != "true") {
+        return;
+    }
+    
+    createBanner();
+    
     var cookieAlert = document.querySelector(".cookiealert");
     var acceptCookies = document.querySelector(".acceptcookies");
 
-    if (!cookieAlert) {
-        return;
-    }
-
-    createBanner();
-    
     cookieAlert.offsetHeight;
     // Show the alert if we cant find the "acceptCookies" cookie
     if (Cookies.get("acceptCookies") == undefined || Cookies.get('acceptCookies') != "true") {
@@ -181,6 +181,7 @@
         Cookies.set("acceptCookies", true, {
             expires: 365
         });
+
         cookieAlert.classList.remove("show");
 
         // dispatch the accept event
