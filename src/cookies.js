@@ -53,9 +53,8 @@ var Utils = {
     },
 
     extend: function () {
-        var i = 0;
         var result = {};
-        for (; i < arguments.length; i++) {
+        for (let i = 0; i < arguments.length; i++) {
             var attributes = arguments[i];
             for (var key in attributes) {
                 result[key] = attributes[key];
@@ -63,9 +62,15 @@ var Utils = {
         }
         return result;
     },
+    decode: function (value) {
+        return value.replace(/(%[\dA-F]{2})+/gi, decodeURIComponent)
+    },
 
-    decode: function (s) {
-        return s.replace(/(%[0-9A-Z]{2})+/g, decodeURIComponent);
+    encode: function (value) {
+        return encodeURIComponent(value).replace(
+            /%(2[346BF]|3[AC-F]|40|5[BDE]|60|7[BCD])/g,
+            decodeURIComponent
+        )
     }
 }
 
@@ -82,27 +87,18 @@ var Cookies = {
         }, this.api.defaults, attributes);
 
         if (typeof attributes.expires === 'number') {
-            attributes.expires = new Date(new Date() * 1 + attributes.expires * 864e+5);
+            attributes.expires = new Date(Date.now() + attributes.expires * 864e5);
         }
 
-        // We're using "expires" because "max-age" is not supported by IE
-        attributes.expires = attributes.expires ? attributes.expires.toUTCString() : '';
+        if (attributes.expires) {
+            attributes.expires = attributes.expires.toUTCString();
+        }
 
-        try {
-            var result = JSON.stringify(value);
-            if (/^[\{\[]/.test(result)) {
-                value = result;
-            }
-        } catch (e) {}
+        key = encodeURIComponent(key)
+            .replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent)
+            .replace(/[()]/g, escape);
 
-        value = window.Cookies.write ?
-            window.Cookies.write(value, key) :
-            encodeURIComponent(String(value))
-            .replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
-
-        key = encodeURIComponent(String(key))
-            .replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent)
-            .replace(/[\(\)]/g, escape);
+        value = Utils.encode(value, key);
 
         var stringifiedAttributes = '';
         for (var attributeName in attributes) {
@@ -120,33 +116,27 @@ var Cookies = {
         return (document.cookie = key + '=' + value + stringifiedAttributes);
     },
 
-    get: function (key, json) {
-        if (typeof document === 'undefined') {
-            return;
+    get: function (key) {
+        if (typeof document === 'undefined' || (arguments.length && !key)) {
+            return
         }
 
-        var jar = {};
         // To prevent the for loop in the first place assign an empty array
         // in case there are no cookies at all.
         var cookies = document.cookie ? document.cookie.split('; ') : [];
+        var jar = {};
 
         for (let i = 0; i < cookies.length; i++) {
             var parts = cookies[i].split('=');
             var cookie = parts.slice(1).join('=');
 
-            if (!json && cookie.charAt(0) === '"') {
+            if (cookie[0] === '"') {
                 cookie = cookie.slice(1, -1);
             }
 
             try {
                 var name = Utils.decode(parts[0]);
                 cookie = Utils.decode(cookie);
-
-                if (json) {
-                    try {
-                        cookie = JSON.parse(cookie);
-                    } catch (e) {}
-                }
 
                 jar[name] = cookie;
 
@@ -163,12 +153,30 @@ var Cookies = {
         return (new RegExp('(?:^|;\\s*)' + encodeURIComponent(key).replace(/[-.+*]/g, '\\$&') + '\\s*\\=')).test(document.cookie);
     },
 
-    remove: function (key, path, domain) {
-        if (!key || !this.has(key)) {
-            return false;
+    remove: function (key, attributes) {
+        this.set(
+            key,
+            '',
+            Utils.extend({}, attributes, {
+                expires: -1
+            })
+        );
+    },
+    clear: function (cookie = "") {
+        if (cookie == "") {
+            var cookies = document.cookie.split(";");
+
+            for (let i = 0; i < cookies.length; i++) {
+                var parts = cookies[i].split('=');
+                var name = Utils.decode(parts[0]);
+
+                localStorage.removeItem(name);
+                this.remove(name);
+            }
+        } else {
+            localStorage.removeItem(cookie);
+            this.remove(cookie);
         }
-        document.cookie = encodeURIComponent(key) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT;path=' + (path ? path : '/');
-        return true;
     },
 
     createBanner: function (cookie, opts) {
@@ -353,12 +361,7 @@ var Cookies = {
         window.dispatchEvent(new Event("cookieAlertReject"))
     },
 
-    clear: function (cookie) {
-        localStorage.removeItem(cookie);
-        this.remove(cookie);
-    },
-
-    init: function (cookie, opts) {
+    init: function (cookie = 'acceptCookies', opts = {}) {
         if (this.has(cookie) === false && localStorage.getItem(cookie) === null) {
             this.createBanner(cookie, opts)
         }
