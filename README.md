@@ -17,10 +17,11 @@ Try it
 
 
 ## Installation
-Add this code before the closing `<body>` tag.
+Add this code before the closing `<body>` tag. ([cdn](https://cdn.jsdelivr.net/gh/AdrianVillamayor/Cookies-JS@main/))
 ```html
 <script src="https://cdn.jsdelivr.net/gh/AdrianVillamayor/Cookies-JS@main/src/cookies.min.js"></script>
 ```
+
 
 ## Basic Usage
 
