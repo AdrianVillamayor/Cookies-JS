@@ -10,6 +10,11 @@ CookieJS adds its own cookie management system and localStorage, which allows yo
 In addition, it allows you to create a 100% customizable banner, with events and checks that will allow you to comply with GDPR Compliant easily.
 
 
+## Demo
+Try it 
+
+[![Codepen](https://user-images.githubusercontent.com/29653964/116972608-8f6bca80-acbb-11eb-98c1-8a3b19705de1.png)](https://codepen.io/adrianvillamayor/pen/jOBNPJL)
+
 
 ## Installation
 Add this code before the closing `<body>` tag.
