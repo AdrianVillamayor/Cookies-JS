@@ -105,12 +105,16 @@ Options for modifying the banner and button style
 | `bannerStyle` | Object  | `{'opacity': 1,'padding': '1.5em'}` | You can add or overwrite any element, the banner will be updated automatically. |
 | `btnStyle` | Object  | `{'padding': '.375rem .75rem', 'line-height': '1.5'}` | General style of buttons. Works exactly like `bannerStyle`. |
 | `accept` | String  | `Accept` | Button text |
+| `acceptClass` | String  | `btn btn-sm acceptcookies` |  Class of accept button. Works exactly like  `bannerClass`.|
 | `acceptStyle` | Object  | `{'background-color': '#007bff'},` |  Style of accept button. Works exactly like  `bannerStyle`.|
 | `reject` | String  | `Reject` | Button text |
+| `rejectClass` | String  | `btn btn-sm rejectcookies` |  Class of reject button. Works exactly like  `bannerClass`.|
 | `rejectStyle` | Object  | `{'background-color': '#007bff'},` |  Style of reject button. Works exactly like  `bannerStyle`.|
 | `config` | String  | `Reject` | Button text  |
+| `configClass` | String  | `btn btn-sm configcookies` |  Class of reject config. Works exactly like  `bannerClass`.|
 | `configStyle` | Object  | `{'background-color': '#007bff'},` | Style of config button. Works exactly like  `bannerStyle`. |
 | `moreinfo` | String  | `Learn more` | Button text  |
+| `moreinfoClass` | String  | `btn btn-sm moreinfocookies` | Class of moreinfo button. Works exactly like  `bannerClass`.  |
 
 
 ## Contributing

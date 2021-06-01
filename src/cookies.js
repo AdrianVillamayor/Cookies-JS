@@ -227,7 +227,7 @@ var Cookies = {
 
             acceptBtn: true,
             accept: 'Accept',
-            acceptClass: 'btn btn-yellow btn-sm acceptcookies',
+            acceptClass: 'btn btn-sm acceptcookies',
             acceptStyle: {
                 'color': '#FFF',
                 'background-color': '#007bff',
@@ -236,7 +236,7 @@ var Cookies = {
 
             rejectBtn: true,
             reject: 'Reject',
-            rejectClass: 'btn btn-yellow btn-sm rejectcookies',
+            rejectClass: 'btn btn-sm rejectcookies',
             rejectColor: "#dc3545",
             rejectStyle: {
                 'color': '#FFF',
@@ -249,7 +249,7 @@ var Cookies = {
             configLink: '#',
             configTarget: '_blank',
             configRel: 'noopener noreferrer',
-            configClass: 'btn btn-yellow btn-sm configcookies',
+            configClass: 'btn btn-sm configcookies',
             configStyle: {
                 'color': '#FFF',
                 'background-color': '#ffc107',
