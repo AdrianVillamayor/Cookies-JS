@@ -103,6 +103,7 @@ Options for modifying the banner and button style
 | ------------- | ------------- | ------------- | ------------- |
 | `bannerClass` | String  | `alert` |  |
 | `bannerStyle` | Object  | `{'opacity': 1,'padding': '1.5em'}` | You can add or overwrite any element, the banner will be updated automatically. |
+| `buttonGroupClass` | String  | `row` | Class of the button group |
 | `btnStyle` | Object  | `{'padding': '.375rem .75rem', 'line-height': '1.5'}` | General style of buttons. Works exactly like `bannerStyle`. |
 | `accept` | String  | `Accept` | Button text |
 | `acceptClass` | String  | `btn btn-sm acceptcookies` |  Class of accept button. Works exactly like  `bannerClass`.|

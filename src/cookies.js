@@ -224,7 +224,7 @@ var Cookies = {
                 'transition': 'color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out'
             },
             message: 'We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.',
-
+            buttonGroupClass: "row",
             acceptBtn: true,
             accept: 'Accept',
             acceptClass: 'btn btn-sm acceptcookies',
@@ -277,7 +277,7 @@ var Cookies = {
         cookie_alert += (options.moreinfoBtn) ? `<a href="${options.moreinfoLink}" type="button" class="${options.moreinfoClass}" target="${options.moreinfoTarget}" rel="${options.moreinfoRel}"> ${options.moreinfo} </a>` : '';
 
         if (Utils.str2bool(options.acceptBtn) || Utils.str2bool(options.rejectBtn) || Utils.str2bool(options.configBtn)) {
-            cookie_alert += '<div>';
+            cookie_alert += `<div class="${options.buttonGroupClass}">`;
             if (Utils.str2bool(options.acceptBtn)) {
                 acceptStyle = Utils.objToString(options.acceptStyle);
                 cookie_alert += `<button type="button" style="${btnStyle} ${acceptStyle}" class="${options.acceptClass}"> ${options.accept} </button>`;
