@@ -1,5 +1,5 @@
 
-![Badge-glow](https://img.shields.io/badge/CookiesJS-v.1-blue?style=flat-square) ![jsDelivr hits (GitHub)](https://img.shields.io/jsdelivr/gh/hm/AdrianVillamayor/Cookies-JS?style=flat-square) ![GitHub repo size](https://img.shields.io/github/repo-size/AdrianVillamayor/Cookies-JS?style=flat-square)
+![Badge-glow](https://img.shields.io/badge/CookiesJS-v.1.1-blue?style=flat-square) ![jsDelivr hits (GitHub)](https://img.shields.io/jsdelivr/gh/hm/AdrianVillamayor/Cookies-JS?style=flat-square) ![GitHub repo size](https://img.shields.io/github/repo-size/AdrianVillamayor/Cookies-JS?style=flat-square)
 # CookieJs - Cookie Manager & Consent Banner in Vanilla JavaScript
 
 ## How it works
