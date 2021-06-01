@@ -224,33 +224,41 @@ var Cookies = {
                 'transition': 'color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out'
             },
             message: 'We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.',
+
             acceptBtn: true,
             accept: 'Accept',
+            acceptClass: 'btn btn-yellow btn-sm acceptcookies',
             acceptStyle: {
                 'color': '#FFF',
                 'background-color': '#007bff',
                 'margin-right': '10px'
             },
+
             rejectBtn: true,
             reject: 'Reject',
+            rejectClass: 'btn btn-yellow btn-sm rejectcookies',
             rejectColor: "#dc3545",
             rejectStyle: {
                 'color': '#FFF',
                 'background-color': '#dc3545',
                 'margin-right': '10px'
             },
+
             configBtn: true,
             config: 'Config',
+            configLink: '#',
+            configTarget: '_blank',
+            configRel: 'noopener noreferrer',
+            configClass: 'btn btn-yellow btn-sm configcookies',
             configStyle: {
                 'color': '#FFF',
                 'background-color': '#ffc107',
                 'text-decoration': 'none'
             },
-            configLink: '#',
-            configTarget: '_blank',
-            configRel: 'noopener noreferrer',
+
             moreinfoBtn: true,
             moreinfo: 'Learn more',
+            moreinfoClass: 'btn btn-sm moreinfocookies',
             moreinfoLink: 'http://aboutcookies.org',
             moreinfoTarget: '_blank',
             moreinfoRel: 'noopener noreferrer'
@@ -266,25 +274,25 @@ var Cookies = {
         cookie_alert = `<div class="${options.bannerClass} ${options.bannerTarget}" style="${bannerStyle}" role="alert">`;
 
         cookie_alert += options.message;
-        cookie_alert += (options.moreinfoBtn) ? `<a href="${options.moreinfoLink}" type="button" class="btn btn-yellow btn-sm" target="${options.moreinfoTarget}" rel="${options.moreinfoRel}"> ${options.moreinfo} </a>` : '';
+        cookie_alert += (options.moreinfoBtn) ? `<a href="${options.moreinfoLink}" type="button" class="${options.moreinfoClass}" target="${options.moreinfoTarget}" rel="${options.moreinfoRel}"> ${options.moreinfo} </a>` : '';
 
         if (Utils.str2bool(options.acceptBtn) || Utils.str2bool(options.rejectBtn) || Utils.str2bool(options.configBtn)) {
             cookie_alert += '<div>';
             if (Utils.str2bool(options.acceptBtn)) {
                 acceptStyle = Utils.objToString(options.acceptStyle);
-                cookie_alert += `<button type="button" style="${btnStyle} ${acceptStyle}" class="btn btn-yellow btn-sm acceptcookies"> ${options.accept} </button>`;
-
+                cookie_alert += `<button type="button" style="${btnStyle} ${acceptStyle}" class="${options.acceptClass}"> ${options.accept} </button>`;
             }
+
             if (Utils.str2bool(options.rejectBtn)) {
                 rejectStyle = Utils.objToString(options.rejectStyle);
-                cookie_alert += `<button type="button" style="${btnStyle} ${rejectStyle}" class="btn btn-yellow btn-sm rejectcookies"> ${options.reject} </button>`;
-
+                cookie_alert += `<button type="button" style="${btnStyle} ${rejectStyle}" class="${options.rejectClass}"> ${options.reject} </button>`;
             }
+
             if (Utils.str2bool(options.configBtn)) {
                 configStyle = Utils.objToString(options.configStyle);
-                cookie_alert += `<a href="${options.configLink}" type="button" style="${btnStyle} ${configStyle}" class="btn btn-yellow btn-sm" target="${options.configTarget}" rel="${options.configRel}"> ${options.config} </a>`;
-
+                cookie_alert += `<a href="${options.configLink}" type="button" style="${btnStyle} ${configStyle}" class=${options.configClass}" target="${options.configTarget}" rel="${options.configRel}"> ${options.config} </a>`;
             }
+
             cookie_alert += '</div>';
         }
 
@@ -345,8 +353,6 @@ var Cookies = {
     },
 
     reject: function (opts, cookieAlert) {
-        window.dispatchEvent(new Event("cookieAlertReject"))
-
         switch (opts.type) {
             case 'localStorage':
                 localStorage.setItem(opts.cookie, false)
