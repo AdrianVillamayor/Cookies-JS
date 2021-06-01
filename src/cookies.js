@@ -290,7 +290,7 @@ var Cookies = {
 
             if (Utils.str2bool(options.configBtn)) {
                 configStyle = Utils.objToString(options.configStyle);
-                cookie_alert += `<a href="${options.configLink}" type="button" style="${btnStyle} ${configStyle}" class=${options.configClass}" target="${options.configTarget}" rel="${options.configRel}"> ${options.config} </a>`;
+                cookie_alert += `<a href="${options.configLink}" type="button" style="${btnStyle} ${configStyle}" class="${options.configClass}" target="${options.configTarget}" rel="${options.configRel}"> ${options.config} </a>`;
             }
 
             cookie_alert += '</div>';
