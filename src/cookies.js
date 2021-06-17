@@ -374,7 +374,7 @@ var Cookies = {
     },
 
     init: function (cookie = 'acceptCookies', opts = {}) {
-        if (str2bool(this.get(cookie)) !== true && str2bool(localStorage.getItem(cookie)) !== true) {
+        if (Utils.str2bool(this.get(cookie)) !== true && Utils.str2bool(localStorage.getItem(cookie)) !== true) {
             this.createBanner(cookie, opts)
         }
     }
