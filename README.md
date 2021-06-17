@@ -1,5 +1,5 @@
 
-![Badge-glow](https://img.shields.io/badge/CookiesJS-v.1.8-blue?style=flat-square) ![jsDelivr hits (GitHub)](https://img.shields.io/jsdelivr/gh/hm/AdrianVillamayor/Cookies-JS?style=flat-square) ![GitHub repo size](https://img.shields.io/github/repo-size/AdrianVillamayor/Cookies-JS?style=flat-square)
+![Badge-glow](https://img.shields.io/badge/CookiesJS-v.1.9-blue?style=flat-square) ![jsDelivr hits (GitHub)](https://img.shields.io/jsdelivr/gh/hm/AdrianVillamayor/Cookies-JS?style=flat-square) ![GitHub repo size](https://img.shields.io/github/repo-size/AdrianVillamayor/Cookies-JS?style=flat-square)
 # CookieJs - Cookie Manager & Consent Banner in Vanilla JavaScript
 
 ## How it works
@@ -19,7 +19,7 @@ Try it
 ## Installation
 Add this code before the closing `<body>` tag. ([cdn](https://www.jsdelivr.com/package/gh/AdrianVillamayor/Cookies-JS))
 ```html
-<script src="https://cdn.jsdelivr.net/gh/AdrianVillamayor/Cookies-JS@1.8/src/cookies.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AdrianVillamayor/Cookies-JS@1.9/src/cookies.min.js"></script>
 ```
 
 
