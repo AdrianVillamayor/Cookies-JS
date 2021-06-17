@@ -83,6 +83,7 @@ Options allowing to modify the behavior and actions of the banner
 | `hideOnScroll` | Boolean  | `false` | `true` or `false` |
 | `scrollDelay` | Int  | `3000` | Expressed in milliseconds |
 | `bannerTarget` | String  | `cookiealert` | Class to be used for events and tracking |
+| `customStyle` | Boolean  | `false` | If false, it automatically generates the style of the banner and buttons. Otherwise, it generates everything without styling to avoid conflicts and overwriting. |
 | `message` | String  | `We use cookies to enhance your experience.` |  Main text of the banner |
 | `acceptBtn` | Boolean  | `true` |  `true` or `false`   |
 | `rejectBtn` | Boolean  | `true` |  `true` or `false`   |

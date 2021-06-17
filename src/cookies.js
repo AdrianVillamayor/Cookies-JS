@@ -189,6 +189,7 @@ var Cookies = {
             type: 'cookie', // localStorage
             bannerClass: "alert",
             bannerTarget: "cookiealert",
+            customStyle: false,
             bannerStyle: {
                 'left': 0,
                 'right': 0,
@@ -212,6 +213,7 @@ var Cookies = {
                 'border': '3px solid tomato',
                 'border-radius': 0
             },
+
             btnStyle: {
                 'text-align': 'center',
                 'border': '1px solid transparent',
@@ -223,8 +225,11 @@ var Cookies = {
                 'margin-top': '10px',
                 'transition': 'color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out'
             },
+
             message: 'We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.',
+
             buttonGroupClass: "row",
+
             acceptBtn: true,
             accept: 'Accept',
             acceptClass: 'btn btn-sm acceptcookies',
@@ -237,7 +242,6 @@ var Cookies = {
             rejectBtn: true,
             reject: 'Reject',
             rejectClass: 'btn btn-sm rejectcookies',
-            rejectColor: "#dc3545",
             rejectStyle: {
                 'color': '#FFF',
                 'background-color': '#dc3545',
@@ -268,8 +272,8 @@ var Cookies = {
             options = Utils.merge(options, opts);
         }
 
-        bannerStyle = Utils.objToString(options.bannerStyle);
-        btnStyle = Utils.objToString(options.btnStyle);
+        bannerStyle = (Utils.str2bool(options.customStyle) === false) ? Utils.objToString(options.bannerStyle) : '';
+        btnStyle = (Utils.str2bool(options.customStyle) === false) ? Utils.objToString(options.btnStyle) : '';
 
         cookie_alert = `<div class="${options.bannerClass} ${options.bannerTarget}" style="${bannerStyle}" role="alert">`;
 
@@ -279,17 +283,17 @@ var Cookies = {
         if (Utils.str2bool(options.acceptBtn) || Utils.str2bool(options.rejectBtn) || Utils.str2bool(options.configBtn)) {
             cookie_alert += `<div class="${options.buttonGroupClass}">`;
             if (Utils.str2bool(options.acceptBtn)) {
-                acceptStyle = Utils.objToString(options.acceptStyle);
+                acceptStyle = (Utils.str2bool(options.customStyle) === false) ? Utils.objToString(options.acceptStyle) : '';
                 cookie_alert += `<button type="button" style="${btnStyle} ${acceptStyle}" class="${options.acceptClass}"> ${options.accept} </button>`;
             }
 
             if (Utils.str2bool(options.rejectBtn)) {
-                rejectStyle = Utils.objToString(options.rejectStyle);
+                rejectStyle = (Utils.str2bool(options.customStyle) === false) ? Utils.objToString(options.rejectStyle) : '';
                 cookie_alert += `<button type="button" style="${btnStyle} ${rejectStyle}" class="${options.rejectClass}"> ${options.reject} </button>`;
             }
 
             if (Utils.str2bool(options.configBtn)) {
-                configStyle = Utils.objToString(options.configStyle);
+                configStyle = (Utils.str2bool(options.customStyle) === false) ? Utils.objToString(options.configStyle) : '';
                 cookie_alert += `<a href="${options.configLink}" type="button" style="${btnStyle} ${configStyle}" class="${options.configClass}" target="${options.configTarget}" rel="${options.configRel}"> ${options.config} </a>`;
             }
 
