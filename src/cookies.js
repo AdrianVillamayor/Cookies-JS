@@ -41,13 +41,12 @@ var Utils = {
         str = String(str);
         switch (str.toLowerCase()) {
             case 'false':
-            case false:
             case 'no':
             case '0':
             case 'n':
             case '':
-            case null:
-            case undefined:
+            case 'null':
+            case 'undefined':
                 return false;
             default:
                 return true;
