@@ -354,7 +354,7 @@ var Cookies = {
         }
 
         cookieAlert.style.display = "none";
-        window.dispatchEvent(new Event("cookieAlertAccept"))
+        document.dispatchEvent(new Event("cookieAlertAccept"))
     },
 
     reject: function (opts, cookieAlert) {
@@ -369,7 +369,7 @@ var Cookies = {
         }
 
         cookieAlert.style.display = "none";
-        window.dispatchEvent(new Event("cookieAlertReject"))
+        document.dispatchEvent(new Event("cookieAlertReject"))
     },
 
     init: function (cookie = 'acceptCookies', opts = {}) {
