@@ -63,13 +63,13 @@ Cookies.init('acceptCookies', options)
 ### Events Management
 When accepting or rejecting an event is generated without params
 ```javascript
-    document.addEventListener("cookieAlertAccept", function (e) {
-        alert("All cookies accepted");
-    });
-   
-   document.addEventListener("cookieAlertReject", function (e) {
-        alert("All cookies are rejected");
-    });
+document.addEventListener("cookieAlertAccept", function (e) {
+	alert("All cookies accepted");
+});
+
+document.addEventListener("cookieAlertReject", function (e) {
+	alert("All cookies are rejected");
+});
 ```
 
 ## Config Cookies
