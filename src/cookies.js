@@ -46,6 +46,8 @@ var Utils = {
             case '0':
             case 'n':
             case '':
+            case null:
+            case undefined:
                 return false;
             default:
                 return true;
@@ -372,7 +374,7 @@ var Cookies = {
     },
 
     init: function (cookie = 'acceptCookies', opts = {}) {
-        if (this.has(cookie) === false && localStorage.getItem(cookie) === null) {
+        if (str2bool(this.get(cookie)) !== true && str2bool(localStorage.getItem(cookie)) !== true) {
             this.createBanner(cookie, opts)
         }
     }
