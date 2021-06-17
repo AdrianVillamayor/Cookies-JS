@@ -19,7 +19,7 @@ Try it
 ## Installation
 Add this code before the closing `<body>` tag. ([cdn](https://www.jsdelivr.com/package/gh/AdrianVillamayor/Cookies-JS))
 ```html
-<script src="https://cdn.jsdelivr.net/gh/AdrianVillamayor/Cookies-JS@1.4/src/cookies.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AdrianVillamayor/Cookies-JS@1.5/src/cookies.min.js"></script>
 ```
 
 
