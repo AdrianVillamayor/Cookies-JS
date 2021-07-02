@@ -19,7 +19,7 @@ Try it
 ## Installation
 Add this code before the closing `<body>` tag. ([cdn](https://www.jsdelivr.com/package/gh/AdrianVillamayor/Cookies-JS))
 ```html
-<script src="https://cdn.jsdelivr.net/gh/AdrianVillamayor/Cookies-JS@1.9/src/cookies.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AdrianVillamayor/Cookies-JS@1.9/src/cookies.min.js" integrity="sha256-unKQ4CGSarNaE1ZBOLWLKNBiW7Xo5MPof4+N9h4NT2Q=" crossorigin="anonymous"></script>
 ```
 
 
