@@ -218,7 +218,8 @@ $margin: 1.75rem;
         }
     }
 
-    input:checked + .slider {
+    input:checked + .slider,
+    .slider.force-active {
         background-color: $main-color;
 
         &:before {
@@ -228,7 +229,7 @@ $margin: 1.75rem;
         }
     }
     
-    input:disabled + .slider {
+    .slider.force-active {
         cursor: not-allowed;
     }
 
