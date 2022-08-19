@@ -1,0 +1,216 @@
+
+@mixin transition($transition) {
+    @include prefixer(transition, $transition);
+}
+
+@mixin appearance($appearance) {
+    @include prefixer(appearance, $appearance);
+}
+
+@mixin brackground-gradient($gradient) {
+    background: -webkit-linear-gradient($gradient);
+    background: -moz-linear-gradient($gradient);
+    background: -o-linear-gradient($gradient);
+    background: linear-gradient($gradient);
+}
+
+@mixin animation($animation) {
+    @include prefixer(animation, $animation);
+}
+
+@mixin border-radius($border-radius) {
+    @include prefixer(border-radius, $border-radius);
+}
+
+@mixin animation-fill-mode($animation) {
+    @include prefixer(animation-fill-mode, $animation);
+}
+
+@mixin transform($transform) {
+    @include prefixer(transform, $transform);
+}
+
+@mixin transform-style($transform) {
+    @include prefixer(transform-style, $transform);
+}
+
+@mixin transform-origin($transform) {
+    @include prefixer(transform-origin, $transform);
+}
+
+@mixin border-all($width, $style, $color, $radius) {
+    border-width: $width;
+    border-style: $style;
+    border-color: $color;
+    border-radius: $radius;
+}
+
+@mixin border($position, $height, $style, $color, $radius) {
+    @each $name in $position {
+        border-#{$name}: $height $style $color;
+        border-radius: $radius;
+    }
+}
+
+@mixin box-sizing($type: border-box) {
+    @include prefixer(box-sizing, $type);
+}
+
+@mixin font($font, $size, $weight, $line_heigth, $letter) {
+    font-family: $font !important;
+    font-size: $size !important;
+    font-weight: $weight !important;
+    line-height: $line_heigth !important;
+    letter-spacing: $letter;
+}
+
+@mixin bg-img($url, $width, $height, $size, $position) {
+    width: $width;
+    height: $height;
+
+    @if $url !=none {
+        background: url($url);
+        background-repeat: no-repeat !important;
+        background-size: $size !important;
+        background-position: $position !important;
+    }
+
+    @include transition(all 0.3s linear);
+}
+
+@mixin position($top, $right, $bottom, $left) {
+    top: $top;
+    right: $right;
+    bottom: $bottom;
+    left: $left;
+}
+
+@mixin keyframes($name) {
+    @-webkit-keyframes #{$name} {
+        @content;
+    }
+
+    @-moz-keyframes #{$name} {
+        @content;
+    }
+
+    @-ms-keyframes #{$name} {
+        @content;
+    }
+
+    @-o-keyframes #{$name} {
+        @content;
+    }
+
+    @keyframes #{$name} {
+        @content;
+    }
+}
+
+@mixin box-arrow($arrowDirection, $arrowColor, $arrowSize: 10px) {
+    position: relative;
+    z-index: 10;
+
+    &::after {
+        content: "";
+        width: 0;
+        height: 0;
+        display: block;
+        position: absolute;
+        z-index: 10;
+        border: 0;
+
+        @if $arrowDirection== "bottom" or $arrowDirection== "top" {
+            border-left: $arrowSize solid transparent;
+            border-right: $arrowSize solid transparent;
+            margin-left: -$arrowSize;
+            left: 50%;
+
+            @if $arrowDirection== "bottom" {
+                border-top: $arrowSize solid $arrowColor;
+                bottom: -$arrowSize;
+            }
+
+            @if $arrowDirection== "top" {
+                border-bottom: $arrowSize solid $arrowColor;
+                top: -$arrowSize;
+            }
+        }
+
+        @if $arrowDirection== "left" or $arrowDirection== "right" {
+            border-top: $arrowSize solid transparent;
+            border-bottom: $arrowSize solid transparent;
+            margin-top: -$arrowSize;
+            top: 50%;
+
+            @if $arrowDirection== "left" {
+                border-right: $arrowSize solid $arrowColor;
+                left: -$arrowSize;
+            }
+
+            @if $arrowDirection== "right" {
+                border-left: $arrowSize solid $arrowColor;
+                left: auto;
+                right: -$arrowSize;
+            }
+        }
+    }
+}
+
+$mix_max: 100;
+$mix_step: 5;
+
+@for $i from 1 through ceil(math.div($mix_max, $mix_step)) {
+    $value: $i * $mix_step;
+
+    .w-#{$value} {
+        width: percentage(math.div($value, 100)) !important;
+    }
+}
+
+@each $name in "45" "90" "180" {
+    .rotate-#{$name} {
+        @include transform(rotate(#{$name}deg));
+    }
+}
+
+%flex {
+    display: flex;
+}
+
+@each $name in "flex-end" "flex-start" "space-around" "space-between" "space-evenly" "center" "baseline" "end" {
+    .flex-justify-#{$name} {
+        @extend %flex;
+        justify-content: #{$name};
+    }
+}
+
+@each $name in "flex-end" "flex-start" "center" "baseline" "end" {
+    .flex-align-#{$name} {
+        @extend %flex;
+        align-items: #{$name};
+    }
+}
+
+@function map-deep-get($map, $keys...) {
+    @each $key in $keys {
+        $map: map-get($map, $key);
+    }
+    @return $map;
+}
+
+@function hexToRGB($hex) {
+    @return red($hex), green($hex), blue($hex);
+}
+
+
+@function str-replace($string, $search, $replace: '') {
+    $string: #{$string};
+    $index: str-index($string, $search);
+    
+    @if $index {
+      @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+    }
+    
+    @return $string;
+  }

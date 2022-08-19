@@ -1,0 +1,280 @@
+$white: #fff;
+$border-color: rgba(0, 0, 0, 0.125);
+$main-color: #273240;
+$main-hover: #273240b8;
+$bg-color: #f5f8fe;
+$margin: 1.75rem;
+
+@mixin prefixer($property, $value) {
+    -webkit-#{$property}: $value;
+    -moz-#{$property}: $value;
+    -ms-#{$property}: $value;
+    -o-#{$property}: $value;
+    #{$property}: $value;
+}
+
+/* BANNER */
+
+.cookie_banner {
+    left: 0;
+    right: 0;
+    width: auto;
+    text-align: center;
+    bottom: 0;
+    margin: 0;
+    padding: 1.5em;
+    align-items: center;
+    line-height: 1.5em;
+    overflow: hidden;
+    position: fixed;
+    z-index: 1050;
+    background-color: $white;
+    border: 1px solid $border-color;
+    border-radius: 0;
+
+    @include prefixer(animation-name, animatebottom);
+    @include prefixer(animation-duration, 0.4s);
+}
+
+/* MODAL */
+
+.cookie_modal {
+    display: none;
+    position: fixed;
+    z-index: 1055;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+    outline: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+
+    .cookie_modal-dialog {
+        max-height: 80vh;
+        position: relative;
+        margin: $margin;
+        width: auto;
+        height: calc(100% - 1.75rem * 2);
+        pointer-events: none;
+
+        /* Modal Content */
+        .cookie_modal-content {
+            position: relative;
+
+            max-height: 100%;
+            overflow: hidden;
+
+            display: flex;
+            flex-direction: column;
+            pointer-events: auto;
+
+            overflow: hidden;
+
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            max-width: 900px;
+            width: 80%;
+
+            margin: auto;
+            padding: 1rem;
+
+            background-color: $white;
+            border: 1px solid $border-color;
+            border-radius: 0.5rem;
+
+            @include prefixer(animation-name, animatetop);
+            @include prefixer(animation-duration, 0.4s);
+
+            .cookie_modal-header {
+                padding: 1rem;
+                position: relative;
+            }
+
+            .cookie_modal-footer {
+                padding: 1rem;
+                position: relative;
+
+                display: flex;
+                flex-shrink: 0;
+                flex-wrap: wrap;
+            }
+
+            .cookie_modal-body {
+                padding: 2px 16px;
+
+                overflow: scroll;
+
+                .list {
+                    display: flex;
+                    flex-direction: column;
+                    padding-left: 0;
+                    margin-bottom: 0;
+
+                    .list-item {
+                        position: relative;
+                        display: block;
+                        // padding: 0.5rem 1rem;
+                        text-decoration: none;
+                        background-color: $white;
+                        border: 1px solid $border-color;
+                        border-radius: 0.5rem;
+
+                        &:first-child {
+                            border-radius: 0.5rem 0.5rem 0 0;
+                        }
+                        &:last-child {
+                            border-radius: 0 0 0.5rem 0.5rem !important;
+                        }
+
+                        & + .list-item {
+                            border-top-width: 0;
+                            border-radius: 0;
+                        }
+
+                        .consentHeader {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 0.5rem 1rem;
+                        }
+
+                        .consentDescription {
+                            background-color: $bg-color;
+                            padding: 0.5rem 1.25rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* BUTTONS */
+
+.btn-group {
+    .btn + .btn {
+        margin-left: 10px;
+    }
+}
+
+.btn {
+    text-align: center;
+    border: 1px solid transparent;
+    padding: 0.375rem 0.75rem;
+    line-height: 1.5;
+    cursor: pointer !important;
+    border-radius: 0.25rem;
+    margin-top: 10px;
+    color: $white;
+    text-decoration: none;
+    height: 32px;
+
+    @include prefixer(transition, all 0.2s ease-in-out);
+
+    background-color: $main-color;
+
+    &:hover {
+        background-color: $main-hover;
+    }
+}
+
+.switchConsent {
+    display: inline-block;
+    height: 28px;
+    position: relative;
+    width: 50px;
+
+    &:disabled{
+        pointer-events: none;
+
+    }
+
+    input {
+        display: none;
+    }
+
+    .slider {
+        background-color: $bg-color;
+        border: 1px solid $main-color;
+        bottom: 0;
+        cursor: pointer;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        transition: 0.4s;
+
+        &:before {
+            background-color: $main-hover;
+            bottom: 3px;
+            content: "";
+            height: 20px;
+            left: 3px;
+            position: absolute;
+            transition: 0.2s;
+            width: 20px;
+        }
+    }
+
+    input:checked + .slider {
+        background-color: $main-color;
+
+        &:before {
+            transform: translateX(110%);
+            background-color: $white;
+
+        }
+    }
+    
+    input:disabled + .slider {
+        cursor: not-allowed;
+    }
+
+    .slider.round {
+        border-radius: 34px;
+
+        &:before {
+            border-radius: 50%;
+        }
+    }
+}
+
+/* ANIMATION */
+
+@-webkit-keyframes animatetop {
+    from {
+        top: -300px;
+        opacity: 0;
+    }
+
+    to {
+        top: 0;
+        opacity: 1;
+    }
+}
+
+@keyframes animatetop {
+    from {
+        top: -300px;
+        opacity: 0;
+    }
+
+    to {
+        top: 0;
+        opacity: 1;
+    }
+}
+
+@keyframes animatebottom {
+    from {
+        bottom: -300px;
+        opacity: 0;
+    }
+
+    to {
+        bottom: 0;
+        opacity: 1;
+    }
+}

@@ -96,8 +96,8 @@ var Cookies = {
         }
 
         key = encodeURIComponent(key)
-            .replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent)
-            .replace(/[()]/g, escape);
+                .replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent)
+                .replace(/[()]/g, encodeURIComponent)
 
         value = Utils.encode(value, key);
 
