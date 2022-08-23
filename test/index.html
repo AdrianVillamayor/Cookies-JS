@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../styles/css/cookies.css">
     <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
     <style>
-        body{
+        body {
             font-family: Montserrat, sans-serif;
             letter-spacing: .1px;
             line-height: 24px;
@@ -19,19 +19,45 @@
 <body>
 
 
-    <script type="text/javascript" src="../src/cool.js"></script>
+    <script type="text/javascript" src="../src/cookie_manager.js"></script>
 
     <script>
 
         var options = {
-            message: "We use cookies to enhance your experience.",
-            moreinfoLink: "/about/cookies",
-
+            manager: "modal",
+            modal: {
+                forceOpen: true,
+                // categories: []
+            }
         };
 
         const Cookies = new Cookie_Manager(options)
-
         Cookies.init();
+
+        // var options2 = {
+        //     cookie: "Cookie_Test",
+        //     manager: "all",
+        //     modal: {
+        //         target: "cookieModal2",
+        //         forceOpen: false,
+        //         choiceClass: 'choiceCookies2',
+        //     },
+        //     banner: { 
+        //         target: "cookieBanner2",
+        //         configClass: 'configCookies2',
+        //         acceptClass: 'acceptCookies2',
+        //         rejectClass: 'rejectCookies2',
+        //     },
+
+        //     i18n: {
+        //         banner: {
+        //             message: "We use cookies to enhance your experience."
+        //         }
+        //     }
+        // };
+      
+        // const Cookies2 = new Cookie_Manager(options2)
+        // Cookies2.init();
 
     </script>
 

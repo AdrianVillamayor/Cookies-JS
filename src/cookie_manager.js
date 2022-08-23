@@ -13,7 +13,7 @@ class Cookie_Manager {
     constructor(args) {
 
         var opts = {
-            cookie: "acceptCookies",
+            cookie: "CookieConsent",
             cookie_attributes: {
                 path: '/',
                 expires: 365,
@@ -27,11 +27,11 @@ class Cookie_Manager {
             hideOnScroll: false,
             scrollDelay: 3000,
             aplication_storage: 'cookie', // localStorage
-            manager: "complete", //modal, banner
+            manager: "modal", //all, banner
 
             banner: {
                 class: "cookie_banner",
-                target: "cookieBanner",
+                target: "cookieBanner", // ID
 
                 buttonGroupClass: "btn-group",
                 buttonClass: "btn",
@@ -58,10 +58,10 @@ class Cookie_Manager {
 
             modal: {
                 class: "cookie_modal",
-                target: "cookieModal",
+                target: "cookieModal",  // ID
                 checkbox: "checkConsent",
-                choiceBtn: false,
                 choiceClass: 'choiceClass',
+                forceOpen: true,
                 categories: [
                     {
                         title: "Necessary",
@@ -110,6 +110,7 @@ class Cookie_Manager {
         this.cookie = this.options.cookie;
         this.cookie_attributes = this.options.cookie_attributes;
         this.aplication_storage = this.options.aplication_storage;
+        this.consent_user = this.decode_consent_cookies();
 
         this.banner = this.options.banner;
         this.modal = this.options.modal;
@@ -128,8 +129,7 @@ class Cookie_Manager {
 
     init() {
         try {
-            $_.cleanEvents($_.getSelector(`.${this.banner.target}`), true);
-            $_.cleanEvents($_.getSelector(`.${this.modal.target}`), true);
+            this.decode_consent_cookies();
 
             switch (this.aplication_storage) {
                 case "localStorage":
@@ -264,106 +264,9 @@ class Cookie_Manager {
         }
     }
 
-    agree() {
-        let checkboxes = document.querySelectorAll(`.${this.modal.checkbox}`);
-
-        var cookies = this.consent_cookies;
-        cookies['utc'] = Date.now();
-        for (let box of checkboxes) {
-            let id = box.getAttribute("id");
-
-            cookies[id] = box.checked;
-        }
-
-        cookies = JSON.stringify(cookies);
-
-        switch (this.aplication_storage) {
-            case 'localStorage':
-                localStorage.setItem(this.cookie, cookies)
-                break;
-
-            default:
-                this.set(this.cookie, cookies, {
-                    expires: this.cookie_attributes.expires
-                });
-                break;
-        }
-
-        this.cleanView();
-        
-        document.dispatchEvent(new Event("cookieAlertAccept"))
-    }
-
-    reject() {
-        let cookies = JSON.stringify(this.consent_cookies);
-
-        switch (this.aplication_storage) {
-            case 'localStorage':
-                localStorage.removeItem(this.cookie);
-                localStorage.setItem(this.cookie, cookies)
-                break;
-
-            default:
-                this.remove(this.cookie);
-                this.set(this.cookie, cookies, {
-                    expires: this.cookie_attributes.expires
-                });
-                break;
-        }
-
-        this.cleanView();
-
-        document.dispatchEvent(new Event("cookieAlertReject"))
-    }
-
-
-    show(manager) {
-        switch (manager) {
-            case "banner":
-                let cookieAlert = document.querySelector(`.${this.banner.target}`);
-                cookieAlert.style.display = "block";
-
-                break;
-            case "modal":
-                let modal = document.getElementById(this.modal.target);
-                modal.style.display = "block";
-                break;
-        }
-    }
-
-    cleanView(){
-        switch (this.options.manager) {
-            case "banner":
-                this.hide("banner")
-                break;
-
-            case "modal":
-                this.hide("modal")
-                break;
-
-            default:
-                this.hide("banner")
-                this.hide("modal")
-                break;
-        }
-    }
-
-    hide(manager) {
-        switch (manager) {
-            case "banner":
-                let cookieAlert = document.querySelector(`.${this.banner.target}`);
-                cookieAlert.style.display = "none";
-
-                break;
-            case "modal":
-                let modal = document.getElementById(this.modal.target);
-                modal.style.display = "none";
-                break;
-        }
-    }
-
-
     create() {
+        this.decode_consent_cookies();
+
         switch (this.options.manager) {
             case "banner":
                 this.banner.configType = "link";
@@ -371,11 +274,11 @@ class Cookie_Manager {
                 break;
             case "modal":
                 this.createModal();
-                let modal = document.getElementById(this.modal.target);
-                modal.style.display = "block";
                 break;
 
             default:
+                this.banner.configType = "m";
+
                 this.createBanner();
                 this.createModal();
                 break;
@@ -383,7 +286,10 @@ class Cookie_Manager {
     }
 
     createBanner() {
-        var cookie_banner = `<div class="${this.banner.class} ${this.banner.target}" role="alert">`;
+        $_.cleanEvents($_.getSelector(`#${this.banner.target}`), true);
+        $_.cleanRepeats(`#${this.banner.target}`);
+
+        var cookie_banner = `<div class="${this.banner.class} ${this.banner.target}" id="${this.banner.target}" role="alert">`;
 
         cookie_banner += this.i18n.banner.message;
         cookie_banner += (this.banner.moreinfoBtn) ? `<a href="${this.banner.moreinfoLink}" type="button" class="${this.banner.moreinfoClass}" target="${this.banner.moreinfoTarget}" rel="${this.banner.moreinfoRel}"> ${this.i18n.moreinfo} </a>` : '';
@@ -424,7 +330,10 @@ class Cookie_Manager {
     }
 
     createModal() {
-        var cookie_modal = `<div class="${this.modal.class}" id="${this.modal.target}">`;
+        $_.cleanEvents($_.getSelector(`#${this.modal.target}`), true);
+        $_.cleanRepeats(`#${this.modal.target}`);
+
+        var cookie_modal = `<div class="${this.modal.class} hide" id="${this.modal.target}">`;
 
         cookie_modal += `<div class="${this.modal.class}-dialog">`;
         cookie_modal += `<div class="${this.modal.class}-content">`;
@@ -439,10 +348,11 @@ class Cookie_Manager {
 
         cookie_modal += `<ul class="list">`;
 
+        let consent_user = this.consent_user;
 
         for (let category of this.modal.categories) {
-            let disabled = ($_.isEmpty(category.disabled) && category.disabled) ? true : "";
-            let checked = ($_.isEmpty(category.checked) && category.checked) ? true : "";
+            let disabled = ($_.isEmpty(category.disabled) && category.disabled) ? true : false;
+            var checked = ($_.isEmpty(category.checked) && category.checked) ? true : false;
 
             cookie_modal += `<li class="list-item">
                 <div class="consentHeader">
@@ -454,6 +364,14 @@ class Cookie_Manager {
                         <div class="slider force-active round"></div>
                     </label>`;
             } else {
+
+                if ($_.isEmpty(consent_user) === true) {
+                    checked = consent_user[category.title.toLowerCase()];
+                }
+
+                checked = (checked) ? "checked" : "";
+                disabled = (disabled) ? "disabled" : "";
+
                 cookie_modal += `
                     <label class="switchConsent" for="${category.title.toLowerCase()}">
                         <input value="1" class="${this.modal.checkbox}" type="checkbox" id="${category.title.toLowerCase()}" ${disabled} ${checked}>
@@ -480,19 +398,21 @@ class Cookie_Manager {
         document.body.innerHTML += cookie_modal;
 
         this.events();
+
+        if (this.modal.forceOpen === true) this.show("modal");
     }
 
     events() {
         const _self = this;
-
+        
         if (this.options.manager !== "banner") {
-            if ($_.str2bool(this.banner.configBtn)) {
-                let configCookies = $_.getSelector(`.${this.banner.configClass}`);
-                let modal = document.getElementById(this.modal.target);
-
-                configCookies.addEventListener("click", function () {
-                    modal.style.display = "block";
-                });
+            let configCookies = $_.getSelectorAll(`.${this.banner.configClass}`);
+            if (configCookies.length > 0 && this.banner.configType != "link") {
+                for (let btn of configCookies) {
+                    btn.addEventListener("click", function () {
+                        _self.show("modal")
+                    });
+                }
             }
         }
 
@@ -501,7 +421,8 @@ class Cookie_Manager {
         if (acceptCookies.length > 0) {
             for (let btn of acceptCookies) {
                 btn.addEventListener("click", function () {
-                    let checkboxes = document.querySelectorAll(`.${_self.modal.checkbox}`)
+                    let parent =  $_.getSelector(`#${_self.modal.target}`)
+                    let checkboxes = $_.getSelectorAll(`.${_self.modal.checkbox}`, parent);
 
                     for (let box of checkboxes) {
                         box.checked = true;
@@ -543,6 +464,137 @@ class Cookie_Manager {
                 }, this.options.scrollDelay);
             };
         }
+
+        this.decode_consent_cookies();
+    }
+
+    show(manager) {
+        switch (manager) {
+            case "banner":
+                let banner = document.querySelector(`.${this.banner.target}`);
+
+                if ($_.isEmpty(banner)) {
+                    banner.style.display = "block";
+                }
+
+                break;
+            case "modal":
+                let modal = document.getElementById(this.modal.target);
+
+                if ($_.isEmpty(modal)) {
+
+                    let show_effect = new Promise((resolve, reject) => {
+                        modal.classList.remove("hide");
+                        modal.classList.add("show");
+                        resolve(true);
+                    });
+
+                    show_effect.then((val) => modal.style.display = "block");
+                }
+                break;
+        }
+    }
+
+    hide(manager) {
+        switch (manager) {
+            case "banner":
+                let banner = document.querySelector(`.${this.banner.target}`);
+
+                if ($_.isEmpty(banner)) {
+                    banner.style.display = "none";
+                }
+
+                break;
+            case "modal":
+                let modal = document.getElementById(this.modal.target);
+                if ($_.isEmpty(modal)) {
+
+                    let hide_effect = new Promise((resolve, reject) => {
+                        modal.classList.remove("show");
+                        modal.classList.add("hide");
+                        setTimeout(() => {
+                            resolve(true);
+                        }, 405);
+                    });
+
+                    hide_effect.then((val) => modal.style.display = "none");
+                }
+                break;
+        }
+    }
+
+    cleanView() {
+        switch (this.options.manager) {
+            case "banner":
+                this.hide("banner")
+                break;
+
+            case "modal":
+                this.hide("modal")
+                break;
+
+            default:
+                this.hide("banner")
+                this.hide("modal")
+                break;
+        }
+    }
+
+
+    agree() {
+        let checkboxes = document.querySelectorAll(`.${this.modal.checkbox}`);
+
+        var cookies = $_.extend(this.consent_cookies);
+        cookies['utc'] = Date.now();
+
+        for (let box of checkboxes) {
+            let id = box.getAttribute("id");
+
+            cookies[id] = box.checked;
+        }
+
+        cookies = JSON.stringify(cookies);
+
+        switch (this.aplication_storage) {
+            case 'localStorage':
+                localStorage.setItem(this.cookie, cookies)
+                break;
+
+            default:
+                this.set(this.cookie, cookies, {
+                    expires: this.cookie_attributes.expires
+                });
+                break;
+        }
+
+        this.cleanView();
+
+        document.dispatchEvent(new Event("CookieConsentAccepted"))
+    }
+
+    reject() {
+        var cookies = $_.extend(this.consent_cookies);
+        cookies['utc'] = Date.now();
+
+        cookies = JSON.stringify(cookies);
+
+        switch (this.aplication_storage) {
+            case 'localStorage':
+                localStorage.removeItem(this.cookie);
+                localStorage.setItem(this.cookie, cookies)
+                break;
+
+            default:
+                this.remove(this.cookie);
+                this.set(this.cookie, cookies, {
+                    expires: this.cookie_attributes.expires
+                });
+                break;
+        }
+
+        this.cleanView();
+
+        document.dispatchEvent(new Event("CookieConsentRejected"))
     }
 
     /**
@@ -564,6 +616,42 @@ class Cookie_Manager {
     set_consent_cookies(consent_cookies) {
         this.consent_cookies = consent_cookies;
     }
+
+    decode_consent_cookies() {
+        var cookies = undefined;
+
+        switch (this.aplication_storage) {
+            case "localStorage":
+                if ($_.str2bool(localStorage.getItem(this.cookie)) === true) {
+                    cookies = localStorage.getItem(this.cookie)
+                }
+                break;
+
+            default:
+                if ($_.str2bool(this.get(this.cookie)) === true) {
+                    cookies = this.get(this.cookie);
+                }
+                break;
+        }
+
+        if ($_.isEmpty(cookies)) {
+            cookies = JSON.parse(cookies);
+            this.set_consent_user(cookies);
+        }
+
+        return this.consent_user;
+    }
+
+    /**
+    * Set options of wizard
+    * 
+    * @return {void}
+    */
+
+    set_consent_user(consent_user) {
+        this.consent_user = consent_user;
+    }
+
 
     /**
     * Check and match the options of the wizard with args definieds
@@ -811,6 +899,7 @@ var $_ = {
             decodeURIComponent
         )
     },
+
     cleanEvents: function (el, withChildren = false) {
         if ($_.exists(el)) {
             if (withChildren) {
@@ -821,5 +910,13 @@ var $_ = {
                 el.parentNode.replaceChild(newEl, el);
             }
         }
+    },
+
+    cleanRepeats: function (el) {
+        const elements = document.querySelectorAll(`${el}`);
+
+        elements.forEach(element => {
+            element.remove();
+        });
     }
 }
