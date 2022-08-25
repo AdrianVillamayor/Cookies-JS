@@ -10,7 +10,7 @@
 
 class Cookie_Manager {
 
-    constructor(args) {
+    constructor(args = null) {
 
         var opts = {
             cookie: "CookieConsent",
@@ -404,7 +404,7 @@ class Cookie_Manager {
 
     events() {
         const _self = this;
-        
+
         if (this.options.manager !== "banner") {
             let configCookies = $_.getSelectorAll(`.${this.banner.configClass}`);
             if (configCookies.length > 0 && this.banner.configType != "link") {
@@ -421,7 +421,7 @@ class Cookie_Manager {
         if (acceptCookies.length > 0) {
             for (let btn of acceptCookies) {
                 btn.addEventListener("click", function () {
-                    let parent =  $_.getSelector(`#${_self.modal.target}`)
+                    let parent = $_.getSelector(`#${_self.modal.target}`)
                     let checkboxes = $_.getSelectorAll(`.${_self.modal.checkbox}`, parent);
 
                     for (let box of checkboxes) {
@@ -662,16 +662,18 @@ class Cookie_Manager {
     */
 
     prefabOpts(options, args) {
-        Object.entries(args).forEach(([key, value]) => {
-            if (typeof value === 'object') {
-                Object.entries(value).forEach(([key_1, value_1]) => {
-                    options[key][key_1] = value_1;
-                });
-            } else {
-                options[key] = value;
-            }
-        });
-
+        if ($_.isEmpty(args)) {
+            Object.entries(args).forEach(([key, value]) => {
+                if (typeof value === 'object') {
+                    Object.entries(value).forEach(([key_1, value_1]) => {
+                        options[key][key_1] = value_1;
+                    });
+                } else {
+                    options[key] = value;
+                }
+            });
+        }
+        
         this.set_options(options);
     }
 
