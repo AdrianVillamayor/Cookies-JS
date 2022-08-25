@@ -490,6 +490,7 @@ class Cookie_Manager {
                     });
 
                     show_effect.then((val) => modal.style.display = "block");
+                    document.body.style.overflow = 'hidden';
                 }
                 break;
         }
@@ -518,6 +519,7 @@ class Cookie_Manager {
                     });
 
                     hide_effect.then((val) => modal.style.display = "none");
+                    document.body.style.overflow = 'hidden';
                 }
                 break;
         }
