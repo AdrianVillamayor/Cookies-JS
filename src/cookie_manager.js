@@ -519,7 +519,7 @@ class Cookie_Manager {
                     });
 
                     hide_effect.then((val) => modal.style.display = "none");
-                    document.body.style.overflow = 'hidden';
+                    document.body.style.overflow = null;
                 }
                 break;
         }
