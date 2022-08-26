@@ -34,6 +34,12 @@
         const Cookies = new Cookie_Manager(options)
         Cookies.init();
 
+        "CookieConsentAccepted CookieConsentRejected".split(" ").forEach(function(e) {
+            document.addEventListener(e, function(e) {
+                console.log(e);
+            });
+        });
+
         // var options2 = {
         //     cookie: "Cookie_Test",
         //     manager: "all",
@@ -58,7 +64,7 @@
       
         // const Cookies2 = new Cookie_Manager(options2)
         // Cookies2.init();
-
+            
     </script>
 
 

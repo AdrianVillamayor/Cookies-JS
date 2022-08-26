@@ -22,6 +22,7 @@ class Cookie_Manager {
                 maxAge: null,
                 httpOnly: false,
                 dateTime: new Date(),
+                SameSite: 'Lax'
             },
 
             hideOnScroll: false,
@@ -101,6 +102,11 @@ class Cookie_Manager {
                     title: "This website uses cookies ",
                     intro: "We use cookies to personalise content and ads, to provide social media features and to analyse our traffic. We also share information about your use of our site with our social media, advertising and analytics partners who may combine it with other information that you’ve provided to them or that they’ve collected from your use of their services.",
                     manage_preferences: "Manage Consent Preferences"
+                },
+                errors: {
+                    empty_document: "Document is undefined.",
+                    empty_html: "Html/body tag is undefined",
+                    empty_content: "Content does not exist or is empty.",
                 }
             }
         };
@@ -129,6 +135,7 @@ class Cookie_Manager {
 
     init() {
         try {
+            this.checkDOM()
             this.decode_consent_cookies();
 
             switch (this.aplication_storage) {
@@ -673,7 +680,7 @@ class Cookie_Manager {
                 }
             });
         }
-        
+
         this.set_options(options);
     }
 
@@ -732,6 +739,10 @@ class Cookie_Manager {
                 case "httpOnly":
                     attributeValue = ($_.str2bool(attributes[attributeName]) === true) ? "" : undefined;
                     break;
+                
+                case "SameSite":
+                    attributeValue = ($_.isEmpty(attributes[attributeName])) ? attributes[attributeName] : undefined;
+                    break;
 
                 default:
                     attributeValue = undefined;
@@ -750,8 +761,20 @@ class Cookie_Manager {
     checkDOM() {
         try {
             if ($_.isEmpty(document) !== true) {
-                $_.throwException(this.options.i18n.emptyDoc);
+                $_.throwException(this.options.i18n.errors.empty_document);
             }
+           
+        } catch (error) {
+            throw error;
+        }
+    }
+   
+    checkDocument() {
+        try {
+            if ($_.isEmpty(document.body) !== true) {
+                $_.throwException(this.options.i18n.errors.empty_html);
+            }
+           
         } catch (error) {
             throw error;
         }
@@ -855,7 +878,7 @@ var $_ = {
     throwException: function (message) {
         var err;
         try {
-            throw new Error('myError');
+            throw new Error('Cookie_Manager_ERROR');
         } catch (e) {
             err = e;
         }
