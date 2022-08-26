@@ -372,21 +372,21 @@ class Cookie_Manager {
 
             if (disabled && checked) {
                 cookie_modal += `
-                    <label class="switchConsent" for="${category.title.toLowerCase()}">
+                    <label class="switchConsent" for="${category.id}">
                         <div class="slider force-active round"></div>
                     </label>`;
             } else {
 
                 if ($_.isEmpty(consent_user) === true) {
-                    checked = consent_user[category.title.toLowerCase()];
+                    checked = consent_user[category.id];
                 }
 
                 checked = (checked) ? "checked" : "";
                 disabled = (disabled) ? "disabled" : "";
 
                 cookie_modal += `
-                    <label class="switchConsent" for="${category.title.toLowerCase()}">
-                        <input value="1" class="${this.modal.checkbox}" type="checkbox" id="${category.title.toLowerCase()}" ${disabled} ${checked}>
+                    <label class="switchConsent" for="${category.id}">
+                        <input value="1" class="${this.modal.checkbox}" type="checkbox" id="${category.id}" ${disabled} ${checked}>
                         <div class="slider round"></div>
                     </label>`;
             }
