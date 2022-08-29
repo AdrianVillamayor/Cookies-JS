@@ -61,7 +61,15 @@ class Cookie_Manager {
                 class: "cookie_modal",
                 target: "cookieModal",  // ID
                 checkbox: "checkConsent",
+                
                 choiceClass: 'choiceClass',
+                moreinfo: true,
+                moreinfoBtn: true,
+                moreinfoClass: 'moreinfoCookies',
+                moreinfoLink: 'http://aboutcookies.org',
+                moreinfoTarget: '_blank',
+                moreinfoRel: 'noopener noreferrer',
+
                 forceOpen: true,
                 categories: [
                     {
@@ -351,7 +359,11 @@ class Cookie_Manager {
         cookie_modal += `<div class="${this.modal.class}-content">`;
         cookie_modal += `  <section class="${this.modal.class}-header">
                                 <h2>${this.i18n.modal.title}</h2>
-                                <p>${this.i18n.modal.intro}</p>
+                                <p>
+                                    ${this.i18n.modal.intro} `
+        cookie_modal +=  (this.banner.moreinfoBtn) ? `<a href="${this.modal.moreinfoLink}" type="button" class="${this.modal.moreinfoClass}" target="${this.modal.moreinfoTarget}" rel="${this.modal.moreinfoRel}"> ${this.i18n.moreinfo} </a>` : '';
+
+        cookie_modal += `       </p>
                                 <button type="button" class="${this.banner.buttonClass} ${this.banner.acceptClass}">${this.i18n.accept}</button>
                             </section>`;
         cookie_modal += `   <div class="${this.modal.class}-body">`;

@@ -1,0 +1,24 @@
+$white: #fff;
+$border-color: rgba(0, 0, 0, 0.125);
+$main-color: #273240;
+$main-hover: #273240b8;
+$bg-color: #f5f8fe;
+$margin: 1.75rem;
+
+// <MEDIA RESPONSIVE>
+$extra_small: 425px; // Small devices (landscape phones, 576px and up)
+$small: 576px; // Small devices (landscape phones, 576px and up)
+$medium: 768px; // Medium devices (tablets, 768px and up)
+$large: 992px; // Large devices (desktops, 992px and up)
+$extra_large: 1200px; // Extra large devices (large desktops, 1200px and up)
+// </MEDIA RESPONSIVE>
+
+
+
+@mixin prefixer($property, $value) {
+    -webkit-#{$property}: $value;
+    -moz-#{$property}: $value;
+    -ms-#{$property}: $value;
+    -o-#{$property}: $value;
+    #{$property}: $value;
+}
