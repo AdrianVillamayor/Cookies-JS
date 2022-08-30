@@ -61,7 +61,7 @@ class Cookie_Manager {
                 class: "cookie_modal",
                 target: "cookieModal",  // ID
                 checkbox: "checkConsent",
-                
+
                 choiceClass: 'choiceClass',
                 moreinfo: true,
                 moreinfoBtn: true,
@@ -70,36 +70,7 @@ class Cookie_Manager {
                 moreinfoTarget: '_blank',
                 moreinfoRel: 'noopener noreferrer',
 
-                forceOpen: true,
-                categories: [
-                    {
-                        id: "necessary",
-                        title: "Necessary",
-                        description: "Necessary cookies help make a website usable by enabling basic functions like page navigation and access to secure areas of the website. The website cannot function properly without these cookies.",
-                        disabled: true,
-                        checked: true
-                    },
-                    {
-                        id: "preference",
-                        title: "Preference",
-                        description: "Preference cookies enable a website to remember information that changes the way the website behaves or looks, like your preferred language or the region that you are in."
-                    },
-                    {
-                        id: "statistics",
-                        title: "Statistics",
-                        description: "Statistic cookies help website owners to understand how visitors interact with websites by collecting and reporting information anonymously."
-                    },
-                    {
-                        id: "marketing",
-                        title: "Marketing",
-                        description: "Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the individual user and thereby more valuable for publishers and third party advertisers."
-                    },
-                    {
-                        id: "unclassified",
-                        title: "Unclassified",
-                        description: "Unclassified cookies are cookies that we are in the process of classifying, together with the providers of individual cookies."
-                    }
-                ]
+                forceOpen: true
             },
 
             i18n: {
@@ -112,14 +83,38 @@ class Cookie_Manager {
                     message: 'We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.'
                 },
                 modal: {
-                    title: "This website uses cookies ",
+                    title: "This website uses cookies 🍪",
                     intro: "We use cookies to personalise content and ads, to provide social media features and to analyse our traffic. We also share information about your use of our site with our social media, advertising and analytics partners who may combine it with other information that you’ve provided to them or that they’ve collected from your use of their services.",
-                    manage_preferences: "Manage Consent Preferences"
+                    manage_preferences: "Manage Consent Preferences",
+                    categories: {
+                        "necessary": {
+                            title: "Necessary",
+                            description: "Necessary cookies help make a website usable by enabling basic functions like page navigation and access to secure areas of the website. The website cannot function properly without these cookies.",
+                        },
+                        "preference": {
+                            title: "Preference",
+                            description: "Preference cookies enable a website to remember information that changes the way the website behaves or looks, like your preferred language or the region that you are in."
+                        },
+                        "statistics": {
+                            title: "Statistics",
+                            description: "Statistic cookies help website owners to understand how visitors interact with websites by collecting and reporting information anonymously."
+                        },
+                        "marketing": {
+                            title: "Marketing",
+                            description: "Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the individual user and thereby more valuable for publishers and third party advertisers."
+                        },
+                        "unclassified": {
+                            title: "Unclassified",
+                            description: "Unclassified cookies are cookies that we are in the process of classifying, together with the providers of individual cookies."
+                        }
+                    }
                 },
+
                 errors: {
                     empty_document: "Document is undefined.",
                     empty_html: "Html/body tag is undefined",
                     empty_content: "Content does not exist or is empty.",
+                    categories_length: "The number of categories does not match the number of categories defined. ",
                 }
             }
         };
@@ -131,8 +126,8 @@ class Cookie_Manager {
         this.aplication_storage = this.options.aplication_storage;
         this.consent_user = this.decode_consent_cookies();
 
-        this.banner = this.options.banner;
-        this.modal = this.options.modal;
+        this.cookie_categories = ["necessary", "preference", "statistics", "marketing", "unclassified"];
+        this.banner = this.options.banner; this.modal = this.options.modal;
 
         this.i18n = this.options.i18n;
         this.prepareCategories()
@@ -361,7 +356,7 @@ class Cookie_Manager {
                                 <h2>${this.i18n.modal.title}</h2>
                                 <p>
                                     ${this.i18n.modal.intro} `
-        cookie_modal +=  (this.banner.moreinfoBtn) ? `<a href="${this.modal.moreinfoLink}" type="button" class="${this.modal.moreinfoClass}" target="${this.modal.moreinfoTarget}" rel="${this.modal.moreinfoRel}"> ${this.i18n.moreinfo} </a>` : '';
+        cookie_modal += (this.banner.moreinfoBtn) ? `<a href="${this.modal.moreinfoLink}" type="button" class="${this.modal.moreinfoClass}" target="${this.modal.moreinfoTarget}" rel="${this.modal.moreinfoRel}"> ${this.i18n.moreinfo} </a>` : '';
 
         cookie_modal += `       </p>
                                 <button type="button" class="${this.banner.buttonClass} ${this.banner.acceptClass}">${this.i18n.accept}</button>
@@ -374,38 +369,33 @@ class Cookie_Manager {
 
         let consent_user = this.consent_user;
 
-        for (let category of this.modal.categories) {
-            let disabled = ($_.isEmpty(category.disabled) && category.disabled) ? true : false;
-            var checked = ($_.isEmpty(category.checked) && category.checked) ? true : false;
-
+        for (let category of this.cookie_categories) {
             cookie_modal += `<li class="list-item">
                 <div class="consentHeader">
-                    <h3>${category.title}</h3>`;
+                    <h3>${this.i18n.modal.categories[category].title}</h3>`;
 
-            if (disabled && checked) {
+            if (category === "necessary") {
                 cookie_modal += `
-                    <label class="switchConsent" for="${category.id}">
+                    <label class="switchConsent" for="${category}">
                         <div class="slider force-active round"></div>
                     </label>`;
             } else {
+                let checked = ""
 
                 if ($_.isEmpty(consent_user) === true) {
-                    checked = consent_user[category.id];
+                    checked = (consent_user[category]) ? "checked" : "";
                 }
-
-                checked = (checked) ? "checked" : "";
-                disabled = (disabled) ? "disabled" : "";
 
                 cookie_modal += `
                     <label class="switchConsent" for="${category.id}">
-                        <input value="1" class="${this.modal.checkbox}" type="checkbox" id="${category.id}" ${disabled} ${checked}>
+                        <input value="1" class="${this.modal.checkbox}" type="checkbox" id="${category.id}" ${checked}>
                         <div class="slider round"></div>
                     </label>`;
             }
 
 
             cookie_modal += `</div>
-                <div class="consentDescription">${category.description}</div>
+                <div class="consentDescription">${this.i18n.modal.categories[category].description}</div>
             </li>`;
         }
 
@@ -715,9 +705,15 @@ class Cookie_Manager {
 
     prepareCategories() {
         let consent_cookies = {};
-        if (this.modal.categories.length > 0) {
-            for (let category of this.modal.categories) {
-                consent_cookies[category.id] = ($_.isEmpty(category.checked)) ? category.checked : false;
+
+        if (this.cookie_categories.length > 0) {
+
+            if (this.cookie_categories.length != Object.keys(this.i18n.modal.categories).length) {
+                $_.throwException(this.i18n.errors.categories_length);
+            }
+
+            for (let category of this.cookie_categories) {
+                consent_cookies[category] = (category === "necessary") ? true : false;
             }
 
             this.set_consent_cookies(consent_cookies);
@@ -756,7 +752,7 @@ class Cookie_Manager {
                 case "httpOnly":
                     attributeValue = ($_.str2bool(attributes[attributeName]) === true) ? "" : undefined;
                     break;
-                
+
                 case "SameSite":
                     attributeValue = ($_.isEmpty(attributes[attributeName])) ? attributes[attributeName] : undefined;
                     break;
@@ -780,18 +776,18 @@ class Cookie_Manager {
             if ($_.isEmpty(document) !== true) {
                 $_.throwException(this.options.i18n.errors.empty_document);
             }
-           
+
         } catch (error) {
             throw error;
         }
     }
-   
+
     checkDocument() {
         try {
             if ($_.isEmpty(document.body) !== true) {
                 $_.throwException(this.options.i18n.errors.empty_html);
             }
-           
+
         } catch (error) {
             throw error;
         }
