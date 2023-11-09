@@ -10,50 +10,57 @@
 */
 
 class Cookie_Bloker {
-    constructor(args = null) {
+    constructor(Cookie_Maneger = undefined) {
         this.regulationRegions = {
             gdpr: ["at", "be", "bg", "cy", "cz", "de", "dk", "es", "ee", "fi", "fr", "gb", "gr", "hr", "hu", "ie", "it", "lt", "lu", "lv", "mt", "nl", "pl", "pt", "ro", "sk", "si", "se", "li", "no", "is"],
             ccpa: ["us-06"],
             lgpd: ["br"],
         };
+
+        //                              0           1             2             3           4
+        this.cookie_categories = ["necessary", "preference", "statistics", "marketing", "unclassified"];
+
         this.domains = [
-            { d: "google-analytics.com", c: [3] },
-            { d: "googletagmanager.com", c: [3] },
-            { d: "googlesyndication.com", c: [4] },
-            { d: "googleadservices.com", c: [4] },
-            { d: "youtube.com", c: [4] },
-            { d: "youtube-nocookie.com", c: [4] },
-            { d: "doubleclick.net", c: [4] },
-            { d: "facebook.*", c: [4] },
-            { d: "linkedin.com", c: [4] },
-            { d: "twitter.com", c: [4] },
-            { d: "addthis.com", c: [4] },
-            { d: "bing.com", c: [4] },
-            { d: "sharethis.com", c: [4] },
-            { d: "yahoo.com", c: [4] },
-            { d: "addtoany.com", c: [4] },
-            { d: "dailymotion.com", c: [4] },
-            { d: "amazon-adsystem.com", c: [4] },
-            { d: "snap.licdn.com", c: [4] },
-            { d: "zdassets.com", c: [3] },
+            { d: "google-analytics.com", c: [2] },
+            { d: "googletagmanager.com", c: [2] },
+            { d: "googlesyndication.com", c: [3] },
+            { d: "googleadservices.com", c: [3] },
+            { d: "youtube.com", c: [3] },
+            { d: "youtube-nocookie.com", c: [3] },
+            { d: "doubleclick.net", c: [3] },
+            { d: "facebook.*", c: [3] },
+            { d: "linkedin.com", c: [3] },
+            { d: "twitter.com", c: [3] },
+            { d: "addthis.com", c: [3] },
+            { d: "bing.com", c: [3] },
+            { d: "sharethis.com", c: [3] },
+            { d: "yahoo.com", c: [3] },
+            { d: "addtoany.com", c: [3] },
+            { d: "dailymotion.com", c: [3] },
+            { d: "amazon-adsystem.com", c: [3] },
+            { d: "snap.licdn.com", c: [3] },
+            { d: "zdassets.com", c: [1, 2] }
         ]
 
         this.browser = this.browserDetect();
+        this.cookies_consent = null;
+
+        if (Cookie_Maneger === "function") {
+            this.cookies_consent = Cookie_Maneger.decode_consent_cookies();
+        }
     }
 
     cookieCategoriesFromNumberArray(catNumberArray) {
-        for (var categoryString = "", i = 0; i < catNumberArray.length; i++)
-            switch (("" !== categoryString && (categoryString += ","), Number(catNumberArray[i]))) {
-                case 2:
-                    categoryString += "preferences";
-                    break;
-                case 3:
-                    categoryString += "statistics";
-                    break;
-                case 4:
-                    categoryString += "marketing";
-            }
-        return "" !== categoryString && "," === categoryString.slice(-1) && (categoryString = categoryString.substring(0, categoryString.length - 1)), categoryString;
+        var categoryString = "";
+
+        catNumberArray.forEach(function (x, i) {
+            categoryString += this.cookie_categories[x];
+            categoryString += ", ";
+        });
+
+        categoryString = categoryString.slice(0, categoryString.length - 2);
+
+        return categoryString;
     }
 
     browserDetect() {
@@ -104,7 +111,8 @@ class Cookie_Bloker {
     }
 
     checkThirdPartys(node) {
-        let $cookie = Cookies.decode_consent_cookies();
+        let _self = this;
+        let $cookie = this.cookies_consent;
         var src = node.src || '';
 
         if (src === "") {
@@ -112,34 +120,26 @@ class Cookie_Bloker {
             src = (src_block !== "") ? src_block : ''
         }
 
-        if (src.includes("zendesk")) {
-            node.setAttribute('data-categories', "preferences, statistics, marketing");
+        this.domains.forEach(function (x, i) {
+            let domain = x['d'];
+            let category = x['c'];
 
-            if ($_.isEmpty($cookie)) {
-                if ($cookie.preference && $cookie.statistics && $cookie.marketing) {
-                    checkStatus(node, true)
+            if (url.indexOf(domain) >= 0) {
+                let data_categories = _self.cookieCategories(category)
+                node.setAttribute('data-categories', data_categories);
+
+                if ($cookie != undefined && $cookie != null && String($cookie).length > 0) {
+                    if ($cookie.preference && $cookie.statistics && $cookie.marketing) {
+                        _self.checkStatus(node, true)
+                    } else {
+                        _self.checkStatus(node)
+                    }
+
                 } else {
-                    checkStatus(node)
+                    _self.checkStatus(node)
                 }
-
-            } else {
-                checkStatus(node)
             }
-        }
-
-        if (src.includes("google")) {
-            node.setAttribute('data-categories', "statistics, marketing");
-
-            if ($_.isEmpty($cookie)) {
-                if ($cookie.statistics && $cookie.marketing) {
-                    checkStatus(node, true)
-                } else {
-                    checkStatus(node)
-                }
-            } else {
-                checkStatus(node)
-            }
-        }
+        })
     }
 
     initMutationObserver() {

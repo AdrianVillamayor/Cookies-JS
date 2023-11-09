@@ -208,7 +208,6 @@ class Cookie_Manager {
                 break;
 
             default:
-
                 var cookies = document.cookie ? document.cookie.split('; ') : [];
 
                 var cookie_value = cookies.map(x => {
